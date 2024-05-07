@@ -1,0 +1,50 @@
+Criando uma dCalendario Dinâmica - Linguagem M (Power Query)
+
+let
+
+    /* Trabalhando nas variaveis */
+
+    /* Extrai a DataMinima do DataSet - Neste caso, a coluna é fEstoque[DataContagem] */
+    DataMinima = List.Min(fEstoque[DataContagem]),
+
+    /* Extrai a DataMáxima do DataSet - Neste caso, a coluna é fEstoque[DataContagem] */
+    DataMaxima = List.Max(fEstoque[DataContagem]),
+    
+    AnoMinimo = Date.Year(DataMinima),
+    AnoMaximo = Date.Year(DataMaxima), 
+    DataInicial = #date(AnoMinimo, 1, 1),
+    DataFinal = #date(AnoMaximo, 12, 31),
+    Duracao = Duration.Days( DataFinal - DataInicial ) + 1,
+
+    /* Criando a Dimensao */
+
+    Fonte = List.Dates(DataInicial, Duracao, #duration(1, 0, 0, 0)),
+    #"Convertido para Tabela" = Table.FromList(Fonte, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
+    #"Colunas Renomeadas" = Table.RenameColumns(#"Convertido para Tabela",{{"Column1", "Data"}}),
+    #"Tipo Alterado" = Table.TransformColumnTypes(#"Colunas Renomeadas",{{"Data", type date}}),
+    #"Índice Adicionado" = Table.AddIndexColumn(#"Tipo Alterado", "Índice", 1, 1, Int64.Type),
+    #"Ano Inserido" = Table.AddColumn(#"Índice Adicionado", "Ano", each Date.Year([Data]), Int64.Type),
+    #"Mês Inserido" = Table.AddColumn(#"Ano Inserido", "Mês_Num", each Date.Month([Data]), Int64.Type),
+    #"Nome do Mês Inserido" = Table.AddColumn(#"Mês Inserido", "Mês_Nome", each Date.MonthName([Data]), type text),
+
+    #"Coluna Condicional Adicionada1" = Table.AddColumn(#"Nome do Mês Inserido", "Semestre", 
+        each if [Mês_Num] > 6 then "2º Semestre" 
+        else "1º Semestre"),
+
+    #"Tipo Alterado2" = Table.TransformColumnTypes(#"Coluna Condicional Adicionada1",{{"Semestre", type text}}),
+    
+    #"Trimestre Inserido" = Table.AddColumn(#"Tipo Alterado2", "Trimestre", each Date.QuarterOfYear([Data]), Int64.Type),
+    #"Semana do Ano Inserida" = Table.AddColumn(#"Trimestre Inserido", "Semana do Ano", each Date.WeekOfYear([Data]), Int64.Type),
+    #"Semana do Mês Inserida" = Table.AddColumn(#"Semana do Ano Inserida", "Semana do Mês", each Date.WeekOfMonth([Data]), Int64.Type),
+    #"Dia da Semana Inserido" = Table.AddColumn(#"Semana do Mês Inserida", "Dia Semana_Num", each Date.DayOfWeek([Data]), Int64.Type),
+    #"Nome do Dia Inserido" = Table.AddColumn(#"Dia da Semana Inserido", "Nome do Dia", each Date.DayOfWeekName([Data]), type text),
+    #"Dia do Ano Inserido" = Table.AddColumn(#"Nome do Dia Inserido", "Dia do Ano", each Date.DayOfYear([Data]), Int64.Type),
+    
+    #"Coluna Condicional Adicionada" = Table.AddColumn(#"Dia do Ano Inserido", "Fim de Semana", 
+        each if [Nome do Dia] = "domingo" then 1 
+        else if [Nome do Dia] = "sábado" then 1 
+        else 0),
+    
+    #"Tipo Alterado1" = Table.TransformColumnTypes(#"Coluna Condicional Adicionada",{{"Fim de Semana", Int64.Type}})
+in
+    #"Tipo Alterado1"
