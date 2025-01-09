@@ -1,0 +1,77 @@
+Tratamento Padrão Mostrando Passo a Passo Lógico
+
+let
+    Fonte = Folder.Files("C:\Users\alancsa\OneDrive - Grupo Comolatti\Documentos\Alan_local\12015_Geral\TratamentoFaltas"),
+    #"Arquivos Ocultos Filtrados1" = Table.SelectRows(Fonte, each [Attributes]?[Hidden]? <> true),
+    #"Invocar Função Personalizada1" = Table.AddColumn(#"Arquivos Ocultos Filtrados1", "Transformar Arquivo", each #"Transformar Arquivo"([Content])),
+    #"Colunas Renomeadas1" = Table.RenameColumns(#"Invocar Função Personalizada1", {"Name", "Nome da Origem"}),
+    #"Outras Colunas Removidas1" = Table.SelectColumns(#"Colunas Renomeadas1", {"Nome da Origem", "Transformar Arquivo"}),
+    #"Coluna de Tabela Expandida1" = Table.ExpandTableColumn(#"Outras Colunas Removidas1", "Transformar Arquivo", Table.ColumnNames(#"Transformar Arquivo"(#"Arquivo de Amostra"))),
+
+	//Remoção de Espaços Indesejados (Função Cortar) - Converte todas as colunas pro formato de texto
+    
+    #"Texto Aparado" = Table.TransformColumns(#"Coluna de Tabela Expandida1",{
+        {"Nome da Origem", Text.Trim, type text}, 
+        {"Column1", Text.Trim, type text}, {"Column2", Text.Trim, type text}, {"Column3", Text.Trim, type text}, {"Column4", Text.Trim, type text}, 
+        {"Column5", Text.Trim, type text}, {"Column6", Text.Trim, type text}, {"Column7", Text.Trim, type text}, {"Column8", Text.Trim, type text}, 
+        {"Column9", Text.Trim, type text}, {"Column10", Text.Trim, type text}, {"Column11", Text.Trim, type text}, {"Column12", Text.Trim, type text}, 
+        {"Column13", Text.Trim, type text}, {"Column14", Text.Trim, type text}, {"Column15", Text.Trim, type text}, {"Column16", Text.Trim, type text}, 
+        {"Column17", Text.Trim, type text}, {"Column18", Text.Trim, type text}, {"Column19", Text.Trim, type text}, {"Column20", Text.Trim, type text}, 
+        {"Column21", Text.Trim, type text}, {"Column22", Text.Trim, type text}, {"Column23", Text.Trim, type text}, {"Column24", Text.Trim, type text}, 
+        {"Column25", Text.Trim, type text}, {"Column26", Text.Trim, type text}, {"Column27", Text.Trim, type text}, {"Column28", Text.Trim, type text}, 
+        {"Column29", Text.Trim, type text}, {"Column30", Text.Trim, type text}, {"Column31", Text.Trim, type text}, {"Column32", Text.Trim, type text}, 
+        {"Column33", Text.Trim, type text}, {"Column34", Text.Trim, type text}, {"Column35", Text.Trim, type text}, {"Column36", Text.Trim, type text}, 
+        {"Column37", Text.Trim, type text}, {"Column38", Text.Trim, type text}, {"Column39", Text.Trim, type text}, {"Column40", Text.Trim, type text}, 
+        {"Column41", Text.Trim, type text}, {"Column42", Text.Trim, type text}, {"Column43", Text.Trim, type text}, {"Column44", Text.Trim, type text}, 
+        {"Column45", Text.Trim, type text}, {"Column46", Text.Trim, type text}, {"Column47", Text.Trim, type text}, {"Column48", Text.Trim, type text}, 
+        {"Column49", Text.Trim, type text}, {"Column50", Text.Trim, type text}, {"Column51", Text.Trim, type text}, {"Column52", Text.Trim, type text}, 
+        {"Column53", Text.Trim, type text}, {"Column54", Text.Trim, type text}, {"Column55", Text.Trim, type text}, {"Column56", Text.Trim, type text}, 
+        {"Column57", Text.Trim, type text}, {"Column58", Text.Trim, type text}}),
+    
+
+	//Substituindo Valores em Branco por null (mais fácil relizar o tratamento)	
+
+    #"Valor Substituído" = Table.ReplaceValue(#"Texto Aparado","",null,Replacer.ReplaceValue,
+        {"Nome da Origem", "Column1", "Column2", "Column3", "Column4", "Column5", "Column6", "Column7", "Column8", "Column9", "Column10", "Column11", 
+         "Column12", "Column13", "Column14", "Column15", "Column16", "Column17", "Column18", "Column19", "Column20", "Column21", "Column22", "Column23", 
+         "Column24", "Column25", "Column26", "Column27", "Column28", "Column29", "Column30", "Column31", "Column32", "Column33", "Column34", "Column35", 
+         "Column36", "Column37", "Column38", "Column39", "Column40", "Column41", "Column42", "Column43", "Column44", "Column45", "Column46", "Column47", 
+         "Column48", "Column49", "Column50", "Column51", "Column52", "Column53", "Column54", "Column55", "Column56", "Column57", "Column58"}),
+    
+    #"Tipo Alterado" = Table.TransformColumnTypes(#"Valor Substituído",{{"Column1", Int64.Type}}),
+    
+    #"Erros Removidos" = Table.RemoveRowsWithErrors(#"Tipo Alterado", {"Column1"}),
+    
+     	//Tipagem das Correta das Colunas
+
+#"Tipo Alterado1" = Table.TransformColumnTypes(#"Erros Removidos",{
+        {"Column10", Int64.Type}, {"Column11", type number}, {"Column12", type number}, {"Column13", type number}, {"Column14", type number}, {"Column15", Int64.Type}, 
+        {"Column16", Int64.Type}, {"Column17", Int64.Type}, {"Column18", Int64.Type}, {"Column19", Int64.Type}, {"Column20", Int64.Type}, {"Column21", type number}, 
+        {"Column22", type number}, {"Column23", type number}, {"Column24", type date}, {"Column25", type number}, {"Column26", type number}, {"Column27", type number}, 
+        {"Column28", Int64.Type}, {"Column29", Int64.Type}, {"Column30", Int64.Type}, {"Column31", Int64.Type}, {"Column32", type date}, {"Column33", type date}, 
+        {"Column34", type date}, {"Column35", type number}, {"Column36", type number}, {"Column41", Int64.Type}, {"Column42", Int64.Type}, {"Column45", Int64.Type}, 
+        {"Column46", type date}, {"Column47", type number}, {"Column49", Int64.Type}, {"Column50", Int64.Type}, {"Column51", type number}, {"Column52", type number}, 
+        {"Column53", type number}, {"Column54", type number}, {"Column55", type number}, {"Column56", type number}, {"Column57", type number}}),
+
+    
+	//Tratamento e cálculo de alguns padrões após a limpeza
+    
+
+    #"QtdePos" = Table.AddColumn(#"Tipo Alterado1", "QtdPos", each if [Column13] > 0 or [Column15] > 0 then 1 else 0),
+
+    #"Linhas Filtradas1" = Table.SelectRows(QtdePos, each ([QtdPos] = 1)),
+    
+    #"Coluna Condicional Adicionada" = Table.AddColumn(#"Linhas Filtradas1", "Rupt", 
+        each if [QtdPos] = 1 and [Column13] > 0 and [Column14] > 0 and [Column15] = 0 
+        then 1 else 0),
+    
+    #"Coluna Condicional Adicionada1" = Table.AddColumn(#"Coluna Condicional Adicionada", "RuptEAF", 
+        each if [Az em Casa] = 1 and [Column17] > 0 
+        then 1 else 0),
+    
+    #"Tipo Alterado2" = Table.TransformColumnTypes(#"Coluna Condicional Adicionada1",{
+        {"QtdPos", Int64.Type}, {"Rupt", Int64.Type}, {"RuptEAF", Int64.Type}})
+
+in
+
+    #"Tipo Alterado2"
