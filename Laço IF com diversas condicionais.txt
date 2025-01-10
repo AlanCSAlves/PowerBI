@@ -1,0 +1,38 @@
+	//Condicional com diversos fatores
+    
+	#"Diagnóstico1" = Table.AddColumn(#"Tipo Alterado", "Diag.", 
+	
+	each if ([#"Column1"]) = 0 and [Column2] = 0 and [Column3] > 0 
+	then "Status1" 
+	
+	else if [#"Column4"] > 0 and [Column5] = 0 
+	then "Status2" 
+	
+	else if ([#"Column1"]) = 0 and [Column6] = 1 and [Column2] > 0 
+	then "Status3" 
+	
+	else if [Column5] = 0 and [#"Column4"] = 0 
+	then "Status4" 
+	
+	else if [#"Column7"] <= 30 
+	then "Status5" 
+	
+	else if [#"Column7"] <= 60 
+	then "Status6" 
+	
+	else if [#"Column7"] <= 90 
+	then "Status7" 
+	
+	else if [#"Column7"] <= 120 
+	then "Status8"  
+	
+	else if [#"Column7"] <= 180 
+	then "Status9" 
+	
+	else "Status10")
+
+    
+     in
+
+	#"Diagnóstico1"
+    
